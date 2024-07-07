@@ -95,16 +95,16 @@ button:active {
     transform: translateY(2px);
 }
 
-.row {
+.horizontal-section {
     display: flex;
     flex-wrap: wrap;
-    margin-right: -0.5rem;
-    margin-left: -0.5rem;
+    justify-content: space-between;
+    margin-top: 1rem;
 }
 
 .column {
     flex: 0 0 100%;
-    padding: 0 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .frame {
@@ -118,8 +118,8 @@ button:active {
 
 .button-group {
     display: flex;
-    justify-content: flex-start;
-    margin-bottom: 1rem;
+    justify-content: space-between;
+    margin-top: 1rem;
 }
 
 table {
@@ -152,7 +152,7 @@ th {
     }
 
     .column {
-        flex: 0 0 50%;
+        flex: 0 0 48%;
     }
 
     .frame {
@@ -160,19 +160,15 @@ th {
     }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+#goalProgress {
+    background-color: var(--calculated-background);
 }
 
-.container {
-    animation: fadeIn 0.5s ease-out;
+#goalProgress h2 {
+    color: var(--primary-color);
 }
 
-.frame {
-    transition: transform 0.3s;
-}
-
-.frame:hover {
-    transform: translateY(-5px);
+#goalProgress p {
+    font-size: 18px;
+    margin: 5px 0;
 }

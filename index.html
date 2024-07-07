@@ -13,16 +13,16 @@
         <form onsubmit="return validateForm()" method="get" action="epf.html">
             <div class="frame">
                 <label for="name">姓名: <span class="required">*</span></label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" value="小帅" required>
 
                 <label for="currentAge">当前年龄: <span class="required">*</span></label>
-                <input type="number" id="currentAge" name="currentAge" required>
+                <input type="number" id="currentAge" name="currentAge" value="30" required>
 
                 <label for="retirementAge">退休年龄: <span class="required">*</span></label>
                 <input type="number" id="retirementAge" name="retirementAge" required oninput="calculateYearsNeeded()">
 
                 <label for="yearsNeeded">所需年份:</label>
-                <input type="number" id="yearsNeeded" name="yearsNeeded" readonly class="calculated">
+                <input type="number" id="yearsNeeded" name="yearsNeeded" readonly class="calculated" value="60">
 
                 <label for="inflationRate">通胀率 (%): <span class="required">*</span></label>
                 <input type="number" id="inflationRate" name="inflationRate" value="4" min="0" step="1" required>
@@ -31,8 +31,8 @@
             <div class="horizontal-section">
                 <div class="column frame">
                     <h2>现在</h2>
-                    <label for="monthlySpending">每月开销: <span class="required">*</span></label>
-                    <input type="number" id="monthlySpending" name="monthlySpending" required>
+                    <label for="monthlySpending">每月开销: <span class="required" >*</span></label>
+                    <input type="number" id="monthlySpending" name="monthlySpending" required value="1500">
 
                     <label for="yearlySpending">每年开销:</label>
                     <input type="number" id="yearlySpending" name="yearlySpending" readonly class="calculated">

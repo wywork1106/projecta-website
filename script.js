@@ -1,10 +1,23 @@
+function loadURLParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    document.getElementById('name').value = urlParams.get('name') || '';
+    document.getElementById('currentAge').value = urlParams.get('currentAge') || '';
+    document.getElementById('retirementAge').value = urlParams.get('retirementAge') || '';
+    document.getElementById('yearsNeeded').value = urlParams.get('yearsNeeded') || '';
+    document.getElementById('inflationRate').value = urlParams.get('inflationRate') || '4';
+}
+
+window.onload = function() {
+    loadURLParams();
+}
+
 function calculateEPF() {
     const currentSalary = parseFloat(document.getElementById('currentSalary').value);
+    const salaryIncreaseRate = parseFloat(document.getElementById('salaryIncreaseRate').value) / 100;
     const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
     const currentEpf = parseFloat(document.getElementById('currentEpf').value);
     const epfRate = parseFloat(document.getElementById('epfRate').value) / 100;
     const yearsNeeded = parseInt(document.getElementById('yearsNeeded').value);
-    const salaryIncreaseRate = parseFloat(document.getElementById('salaryIncreaseRate').value) / 100;
 
     if (isNaN(currentSalary) || isNaN(currentEpf)) {
         alert('请输入有效的数值。');
@@ -19,79 +32,70 @@ function calculateEPF() {
     document.getElementById('currentSalaryR').value = currentSalaryR.toFixed(2);
     document.getElementById('epfR').value = epfR.toFixed(2);
 
-    generateTable(currentSalary, inflationRate, currentEpf, epfRate, yearsNeeded, salaryIncreaseRate);
+    generateTable(currentSalary, inflationRate, currentEpf, epfRate, salaryIncreaseRate);
 
+    // Calculate and display goal progress
+    const retirementNeeded = 1263057; // Example value, replace with your actual calculation
+    const tableRows = document.getElementById('epfTable').rows;
+    const finalAmount = parseFloat(tableRows[tableRows.length - 1].cells[7].innerHTML);
+    const goalProgress = finalAmount - retirementNeeded;
+    const goalProgressPercentage = (goalProgress / retirementNeeded) * 100;
+
+    let exceededYear = -1;
+    let exceededAmount = 0;
+
+    for (let i = 1; i < tableRows.length; i++) {
+        const currentAmount = parseFloat(tableRows[i].cells[7].innerHTML);
+        if (currentAmount >= retirementNeeded && exceededYear === -1) {
+            exceededYear = parseInt(tableRows[i].cells[1].innerHTML);
+            exceededAmount = currentAmount - retirementNeeded;
+            break;
+        }
+    }
+
+    document.getElementById('goalAmount').innerText = `退休目标: RM${retirementNeeded.toFixed(2)}`;
+    document.getElementById('goalProgressPercentage').innerText = `最终超越目标: ${Math.abs(goalProgressPercentage).toFixed(2)} %`;
+    
+    if (exceededYear !== -1) {
+        document.getElementById('exceededYear').innerText = `第 ${exceededYear} 年超过退休目标 `;
+        document.getElementById('exceededAmount').innerText = `超过金额 RM ${exceededAmount.toFixed(2)} (${((exceededAmount / retirementNeeded) * 100).toFixed(2)}%)`;
+    } else {
+        document.getElementById('exceededYear').innerText = '未能达到退休目标';
+        document.getElementById('exceededAmount').innerText = '';
+    }
+
+    document.getElementById('goalProgress').style.display = 'block';
     document.getElementById('epfCalculator').style.display = 'block';
 
     return true;
 }
 
-function generateTable(currentSalary, inflationRate, currentEpf, epfRate, yearsNeeded, salaryIncreaseRate) {
+function generateTable(currentSalary, inflationRate, currentEpf, epfRate, salaryIncreaseRate) {
+    const yearsNeeded = parseInt(document.getElementById('yearsNeeded').value);
+
     const table = document.getElementById('epfTable').getElementsByTagName('tbody')[0];
     table.innerHTML = ''; // Clear existing rows
 
-    let totalWithInterest = currentEpf;
-    let monthlySalary = currentSalary;
+    let accumulatedEpf = currentEpf;
 
     for (let i = 0; i <= yearsNeeded; i++) {
         const row = table.insertRow();
-        const interest = totalWithInterest * epfRate;
-        totalWithInterest += interest;
-
-        const yearlyIncome = monthlySalary * 12;
+        const monthlyIncome = currentSalary * Math.pow(1 + salaryIncreaseRate, i);
+        const yearlyIncome = monthlyIncome * 12;
         const yearlyEpfIncome = yearlyIncome * 0.24;
-        totalWithInterest += yearlyEpfIncome;
+        accumulatedEpf += yearlyEpfIncome;
+        const interest = accumulatedEpf * epfRate;
+        const totalWithInterest = accumulatedEpf + interest;
 
-        row.insertCell(0).innerHTML = totalWithInterest.toFixed(2);
-        row.insertCell(1).innerHTML = yearsNeeded - i;
-        row.insertCell(2).innerHTML = i;
-        row.insertCell(3).innerHTML = monthlySalary.toFixed(2);
-        row.insertCell(4).innerHTML = yearlyIncome.toFixed(2);
-        row.insertCell(5).innerHTML = yearlyEpfIncome.toFixed(2);
-        row.insertCell(6).innerHTML = totalWithInterest.toFixed(2);
-        row.insertCell(7).innerHTML = interest.toFixed(2);
-
-        monthlySalary *= (1 + salaryIncreaseRate);
+        row.insertCell(0).innerHTML = yearsNeeded - i; //years
+        row.insertCell(1).innerHTML = i; //current years
+        row.insertCell(2).innerHTML = monthlyIncome.toFixed(2); //1 month income
+        row.insertCell(3).innerHTML = yearlyIncome.toFixed(2); //1 year income
+        row.insertCell(4).innerHTML = yearlyEpfIncome.toFixed(2); //this year fp income
+        row.insertCell(5).innerHTML = accumulatedEpf.toFixed(2); 
+        row.insertCell(6).innerHTML = interest.toFixed(2);
+        row.insertCell(7).innerHTML =  totalWithInterest.toFixed(2); //epf + interest
+ 
+        accumulatedEpf = totalWithInterest;
     }
-
-    // Calculate and display goal progress
-    const retirementNeeded = parseFloat(document.getElementById('retirementAmountNeededR').value);
-    const goalProgress = totalWithInterest - retirementNeeded;
-    const goalProgressPercentage = (goalProgress / retirementNeeded) * 100;
-
-    const goalAmountElement = document.getElementById('goalAmount');
-    const goalProgressPercentageElement = document.getElementById('goalProgressPercentage');
-
-    if (goalProgress < 0) {
-        goalAmountElement.innerHTML = `恭喜！您已经达到了退休目标！`;
-        goalProgressPercentageElement.innerHTML = `超出目标: ${Math.abs(goalProgress).toFixed(2)} 元`;
-    } else {
-        goalAmountElement.innerHTML = `还需要积累: ${goalProgress.toFixed(2)} 元`;
-        goalProgressPercentageElement.innerHTML = `进度: ${goalProgressPercentage.toFixed(2)}%`;
-    }
-
-    document.getElementById('goalProgress').style.display = 'block';
-}
-
-function toggleEpfCalculator() {
-    const epfCalculator = document.getElementById('epfCalculator');
-    const goalProgress = document.getElementById('goalProgress');
-    if (epfCalculator.style.display === 'none') {
-        epfCalculator.style.display = 'block';
-        goalProgress.style.display = 'block';
-    } else {
-        epfCalculator.style.display = 'none';
-        goalProgress.style.display = 'none';
-    }
-}
-
-// Load data from index.html
-window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    document.getElementById('name').value = urlParams.get('name');
-    document.getElementById('currentAge').value = urlParams.get('currentAge');
-    document.getElementById('retirementAge').value = urlParams.get('retirementAge');
-    document.getElementById('yearsNeeded').value = urlParams.get('yearsNeeded');
-    document.getElementById('inflationRate').value = urlParams.get('inflationRate');
-    document.getElementById('currentEpf').value = urlParams.get('currentEpf');
 }
