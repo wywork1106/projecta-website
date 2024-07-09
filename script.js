@@ -37,28 +37,32 @@ function calculateEPF() {
     // Calculate and display goal progress
     const retirementNeeded = 1263057; // Example value, replace with your actual calculation
     const tableRows = document.getElementById('epfTable').rows;
-    const finalAmount = parseFloat(tableRows[tableRows.length - 1].cells[7].innerHTML);
+    const finalAmount = parseFloat(tableRows[tableRows.length - 1].cells[6].innerHTML);
     const goalProgress = finalAmount - retirementNeeded;
-    const goalProgressPercentage = (goalProgress / retirementNeeded) * 100;
+    const goalProgressPercentage = (finalAmount / retirementNeeded) * 100;
 
     let exceededYear = -1;
     let exceededAmount = 0;
 
     for (let i = 1; i < tableRows.length; i++) {
-        const currentAmount = parseFloat(tableRows[i].cells[7].innerHTML);
+        const currentAmount = parseFloat(tableRows[i].cells[6].innerHTML);
         if (currentAmount >= retirementNeeded && exceededYear === -1) {
-            exceededYear = parseInt(tableRows[i].cells[1].innerHTML);
+            exceededYear = parseInt(tableRows[i].cells[0].innerHTML);
             exceededAmount = currentAmount - retirementNeeded;
             break;
         }
     }
 
-    document.getElementById('goalAmount').innerText = `退休目标: RM${retirementNeeded.toFixed(2)}`;
-    document.getElementById('goalProgressPercentage').innerText = `最终超越目标: ${Math.abs(goalProgressPercentage).toFixed(2)} %`;
+    document.getElementById('goalAmount').innerHTML = `退休目标: <span class="highlight">RM${retirementNeeded.toFixed(2)}</span>`;
+    document.getElementById('goalProgressPercentage').innerHTML = `目标完成度: <span class="highlight">${Math.min(goalProgressPercentage, 100).toFixed(2)}%</span>`;
     
+    const progressFill = document.getElementById('progressFill');
+    progressFill.style.width = `${Math.min(goalProgressPercentage, 100)}%`;
+    progressFill.style.backgroundColor = goalProgressPercentage >= 100 ? '#4CAF50' : '#FFA500';
+
     if (exceededYear !== -1) {
-        document.getElementById('exceededYear').innerText = `第 ${exceededYear} 年超过退休目标 `;
-        document.getElementById('exceededAmount').innerText = `超过金额 RM ${exceededAmount.toFixed(2)} (${((exceededAmount / retirementNeeded) * 100).toFixed(2)}%)`;
+        document.getElementById('exceededYear').innerHTML = `在第 <span class="highlight">${exceededYear}</span> 年达到退休目标`;
+        document.getElementById('exceededAmount').innerHTML = `超出金额: <span class="highlight">RM ${exceededAmount.toFixed(2)}</span> (${((exceededAmount / retirementNeeded) * 100).toFixed(2)}%)`;
     } else {
         document.getElementById('exceededYear').innerText = '未能达到退休目标';
         document.getElementById('exceededAmount').innerText = '';
@@ -99,3 +103,17 @@ function generateTable(currentSalary, inflationRate, currentEpf, epfRate, salary
         accumulatedEpf = totalWithInterest;
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('toggleButton').addEventListener('click', function() {
+        var calculator = document.getElementById('epfCalculator');
+        if (calculator.style.display === 'none' || calculator.style.display === '') {
+            calculator.style.display = 'block';
+            this.textContent = '隐藏 EPF 计算器';
+        } else {
+            calculator.style.display = 'none';
+            this.textContent = '显示 EPF 计算器';
+        }
+    });
+});
+
