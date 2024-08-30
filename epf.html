@@ -4,81 +4,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EPF 计算器</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!---This for export pdf only-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-font-chinese-msyh@1.0.1/dist/jspdf-font-chinese-msyh.min.js"></script>
+    
+
     <link rel="stylesheet" href="epf.css">
     <script src="epf.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>EPF 计算器</h1>
-        <div class="frame">
+
+        <form id="epfForm" class="column frame">
+            <!-- hidden for nextt page purpose-->
             <div class="input-group">
-                <label for="name">姓名:</label>
-                <input type="text" id="name" name="name" required>
+                <input type="hidden" id="name" required>
             </div>
+            
             <div class="input-group">
-                <label for="salaryIncreaseRate">薪水增加率 (%):</label>
-                <input type="number" id="salaryIncreaseRate" name="salaryIncreaseRate" value="1" required>
+                <input type="hidden" id="retirementAge" required>
             </div>
+    
             <div class="input-group">
-                <label for="currentAge">当前年龄:</label>
-                <input type="number" id="currentAge" name="currentAge" required>
+                <input type="hidden" id="yearsNeeded" required>
             </div>
+    
             <div class="input-group">
-                <label for="retirementAge">退休年龄:</label>
-                <input type="number" id="retirementAge" name="retirementAge" required>
+                <input type="hidden" id="inflationRate" required>
             </div>
+
             <div class="input-group">
-                <label for="yearsNeeded">所需年份:</label>
-                <input type="number" id="yearsNeeded" name="yearsNeeded" required>
+                <input type="hidden" id="currentAge" required>
             </div>
+
             <div class="input-group">
-                <label for="inflationRate">通胀率 (%):</label>
-                <input type="number" id="inflationRate" name="inflationRate" value="4" readonly>
+                <input type="hidden" id="monthlySpending" required>
             </div>
+
+            <!--until here-->
+
+
             <div class="input-group">
-                <label for="currentEpf">现在 EPF 有:</label>
-                <input type="number" id="currentEpf" name="currentEpf" required value="40000">
+                <label for="salaryIncreaseRate">薪水增加率 (%): <span class="required">*</span></label>
+                <input type="number" id="salaryIncreaseRate" step="0.1" required placeholder="预计每年薪水增加率%">
             </div>
+    
             <div class="input-group">
-                <label for="epfRate">EPF 利率 (%):</label>
-                <input type="number" id="epfRate" name="epfRate" value="6" required>
+                <label for="currentEpf">现在 EPF 有: <span class="required">*</span></label>
+                <input type="number" id="currentEpf" required placeholder="当前存有的EPF总额">
             </div>
+    
             <div class="input-group">
-                <label for="currentSalary">现在薪水:</label>
-                <input type="number" id="currentSalary" name="currentSalary" required value="4000">
+                <label for="epfRate">EPF 利率 (%): <span class="required">*</span></label>
+                <input type="number" id="epfRate"  step="0.1" required placeholder="例如: 2.5">
             </div>
+    
             <div class="input-group">
-                <label for="epfNow">EPF:</label>
-                <input type="number" id="epfNow" name="epfNow" readonly class="calculated">
+                <label for="currentSalary">现在薪水: <span class="required">*</span></label>
+                <input type="number" id="currentSalary" required placeholder="当前每月开销">
             </div>
-            <div class="input-group">
-                <label for="currentSalaryR">现在薪水 (R):</label>
-                <input type="number" id="currentSalaryR" name="currentSalaryR" readonly class="calculated">
-            </div>
-            <div class="input-group">
-                <label for="epfR">EPF (R):</label>
-                <input type="number" id="epfR" name="epfR" readonly class="calculated">
+    
+            <div class="column frame">
+                <h2>EPF 自动计算器</h2>
+                <div class="input-group">
+                    <label for="epf">EPF:</label>
+                    <input type="text" id="epf" readonly>
+                </div>
+        
+                <div class="input-group">
+                    <label for="currentSalaryR">现在薪水 (R):</label>
+                    <input type="text" id="currentSalaryR" readonly>
+                </div>
+        
+                <div class="input-group">
+                    <label for="epfR">EPF (R):</label>
+                    <input type="text" id="epfR" readonly>
+                </div>
             </div>
             <div class="button-group">
-                <button type="button" onclick="calculateEPF()">计算</button>
-                <button type="button" onclick="window.location.href='house.html'">下一步</button>
-                <button id="toggleButton" type="button">显示 EPF 计算器</button>
+                <button type="button" id="progressButton">目标进度</button>
+                <button type="button" id="toggleEpfButton">显示 EPF 计算器</button>
+                <button type="button" id="nextButton">下一个</button>
             </div>
+        </form>
+    
+            <input type="hidden" id="retirementAmountNeeded">
+            <div class="column frame">
+            <div class="progress-container">
+                
+                
+                <div id="progressInfo" class="progress-info" style="display: none;">
+                    <h2>退休进度概览</h2>
+                    <p>您的退休目标金额为 <span id = "displayRetirementGoal" class="highlight"></span></p>
 
-            <div id="goalProgress" class="frame">
-                <h2>退休需要的钱</h2>
-                <div id="progressBar">
-                    <div id="progressFill"></div>
-                </div>
-                <p id="goalAmount"></p>
-                <p id="goalProgressPercentage"></p>
-                <p id="achievedYear"></p>
-                <p id="yearsToAchieve"></p>
-                <p id="exceededAmount"></p>
-            </div>
-        </div>
+                    <div class="financial-dashboard">
+                      <div class="kpi-list">
+                        <div class="kpi-item">
+                          <span id="epfAmountShort" class="kpi-value"></span>
+                          <span class="kpi-label">EPF 累积</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="targetRetirementAmountShort" class="kpi-value"></span>
+                          <span class="kpi-label">退休目标</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="totalAmountShort" class="kpi-value"></span>
+                          <span class="kpi-label">总累积资产</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="shortfallShort" class="kpi-value"></span>
+                          <span class="kpi-label">距离目标差额</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="monthlyEstimateShort" class="kpi-value"></span>
+                          <span class="kpi-label">退休后每月估算</span>
+                        </div>
+    
+                          <div class="goal-progress">
+                            <div class="progress-bar">
+                                <div class="progress-segment epf" style="width: 0%;">EPF</div>
+                                <div class="progress-segment real-estate" style="width: 0%;"></div>
+                                <div class="progress-segment stocks" style="width: 0%;"></div>
+                                <div class="progress-segment remaining" style="width: 100%;">剩余</div>
+                              </div>
+                              <p>您已完成 <span id="completionPercentage">0</span>% 的退休储蓄目标</p>
+                            <p>请记住进步 1% ！ </p>
+                          </div>
+                      </div>
+                    </div>
+                </div>    
 
-        <div id="epfCalculator" style="display:none;">
+ </div>
+                  
+        <div id="epfCalculator" class="frame" style="display:none;">
             <div class="table-container">
                 <table id="epfTable">
                     <thead>
@@ -93,7 +154,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Rows will be added here dynamically -->
                     </tbody>
                 </table>
             </div>

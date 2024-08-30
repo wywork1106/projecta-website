@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资总结</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="conclusion.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>投资总结</h1>
+    
+        <div class="summary-card">
+            <h2 id="userName">退休计划进度</h2>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                    <div id="progressText" class="progress-text"></div>
+                </div>
+                <p id="progressPercentage"></p>
+                <h3 id="userName" type = "hidden"></h3>
+                <p id="congratsMessage" type = "hidden"></p>
+                <div id="completionMessage" class="completion-message"></div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <h2>总结投资结果</h2>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h3>EPF</h3>
+                    <p id="epfAmount"></p>
+                    <p id="epfPercentage" class="percentage"></p>
+                </div>
+                <div class="comparison-item">
+                    <h3>房地产</h3>
+                    <p id="realEstateAmount"></p>
+                    <p id="realEstatePercentage" class="percentage"></p>
+                </div>
+                <div class="comparison-item">
+                    <h3>股票</h3>
+                    <p id="stockAmount"></p>
+                    <p id="stockPercentage" class="percentage"></p>
+                </div>
+            </div>
+        </div>
+
+    
+        <div class="summary-grid" >
+            <div class="summary-item">
+                <h3>目标退休金额</h3>
+                <p id="targetRetirementAmount"></p>
+            </div>
+            <div class="summary-item">
+                <h3>当前总额</h3>
+                <p id="totalAmount"></p>
+            </div>
+            <div class="summary-item">
+                <h3>距离目标还差</h3>
+                <p id="shortfall"></p>
+            </div>
+            <div class="summary-item">
+                <h3>退休后每月预计</h3>
+                <p id="monthlyEstimate"></p>
+            </div>
+        </div>
+    
+        <div class="chart-summary-card">
+            <h2>累计成长</h2>
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="chart-summary-card" td style="display:none;">
+            <h2>投资分布</h2>
+            <div class="chart-container">
+                <canvas id="distributionChart"></canvas>
+            </div>
+        </div>
+
+    
+        <div class="summary-card" td style="display:none;" >
+            <h2>额外投资比较</h2>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h3>基础投资</h3>
+                    <p id="baseInvestment"></p>
+                </div>
+                <div class="comparison-item">
+                    <h3>额外 1% 投资</h3>
+                    <p id="extraInvestment"></p>
+                </div>
+                <div class="comparison-item">
+                    <h3>差额</h3>
+                    <p id="investmentDifference"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-card" td style="display:none;">
+            <h2>额外 1% 投资对比</h2>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h3>固定额外 1%</h3>
+                    <p id="fixedExtraInvestment"></p>
+                </div>
+                <div class="comparison-item">
+                    <h3>每年增加 1%</h3>
+                    <p id="increasingExtraInvestment"></p>
+                </div>
+                <div class="comparison-item">
+                    <h3>差额</h3>
+                    <p id="extraInvestmentDifference"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="summary-card">
+                <h2>薪资概要</h2>
+                <div class="chart-container">
+                    <canvas id="salaryChart" style="width: 100%; height: 400px;"></canvas>
+                </div>
+            </div>
+    
+            <div class="summary-card">
+                <h2>财务参数</h2>
+                <div class="financial-parameters-grid">
+                  <div class="parameter-group personal-finance">
+                    <h3>个人财务状况</h3>
+                    <div class="card">
+                        <h4>当前薪资</h4>
+                        <p id="currentSalary"></p>
+                      </div>
+                    <div class="card">
+                      <h4>月度支出</h4>
+                      <p id="monthlySpending"></p>
+                    </div>
+                  </div>
+                  <div class="parameter-group epf">
+                    <h3>公积金数据</h3>
+                    <div class="card">
+                      <h4>公积金比率</h4>
+                      <p id="epfRate"></p>
+                    </div>
+                    <div class="card">
+                      <h4>薪资增长率</h4>
+                      <p id="salaryIncreaseRate"></p>
+                    </div>
+                  </div>
+                  <div class="parameter-group real-estate">
+                    <h3>房产信息</h3>
+                    <div class="card">
+                      <h4>房屋价格</h4>
+                      <p id="housePrice"></p>
+                    </div>
+                    <div class="card">
+                      <h4>租金</h4>
+                      <p id="rentAmount"></p>
+                    </div>
+                    <div class="card">
+                      <h4>房屋增值率</h4>
+                      <p id="houseAppreciationRate"></p>
+                    </div>
+                    <div class="card">
+                      <h4>额外付款百分比</h4>
+                      <p id="additionalPaymentPercentage"></p>
+                    </div>
+                  </div>
+                  <div class="parameter-group stocks">
+                    <h3>股票数据</h3>
+                    <div class="card">
+                      <h4>每月股票投资</h4>
+                      <p id="monthlyStockInvestment"></p>
+                    </div>
+                    <div class="card">
+                      <h4>股息率</h4>
+                      <p id="dividendRate"></p>
+                    </div>
+                    <div class="card">
+                      <h4>增长率</h4>
+                      <p id="growthRate"></p>
+                    </div>
+                  </div>
+                  <div class="parameter-group retirement">
+                    <h3>退休生活</h3>
+                    <div class="card">
+                      <h4>退休后每月预计</h4>
+                      <p id="monthlyEstimate2"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+          
+
+    
+        <div class="conclusion-text">
+            <h2>总结</h2>
+            <p>这个投资计划展示了如何通过时间的力量和多元化投资来实现您的退休目标。记住，投资是一个渐进的过程，需要耐心和持续的努力。通过定期投资和平衡您的投资组合，您可以逐步接近您的财务目标。</p>
+        </div>
+        <div class="new-button-group">
+            <button id="simulateAgainButton" class="custom-button simulate-again">再次模拟人生</button>
+            <button id="saveScreenshotButton" class="custom-button save-screenshot">保存为图片</button>
+          </div>
+     
+        
+    </div>
+
+    <script src="conclusion.js"></script>
+</body>
+</html>

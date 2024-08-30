@@ -4,48 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>房屋投资计算器</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="house.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container" form id="houseform">
         <h1>房屋投资计算器</h1>
+
         <div class="frame">
             <div class="input-group">
                 <label for="housePrice">屋子价格:</label>
-                <input type="number" id="housePrice" name="housePrice" required>
+                <input type="number" id="housePrice" placeholder="例如: 500000" required>
             </div>
+
             <div class="input-group">
-                <label for="rentAmount">租金 (每月):</label>
-                <input type="number" id="rentAmount" name="rentAmount" required>
+                <label for="rentAmount">房租 (每月):</label>
+                <input type="number" id="rentAmount" placeholder="例如: 1000" required>
             </div>
-            <div class="input-group">
-                <label for="monthlyPayment">月供:</label>
-                <input type="number" id="monthlyPayment" name="monthlyPayment" value="850" required>
-            </div>
+
             <div class="input-group">
                 <label for="houseAppreciationRate">屋子增长率 (%):</label>
-                <input type="number" id="houseAppreciationRate" name="houseAppreciationRate" value="5.920" step="0.001" required>
+                <input type="number" id="houseAppreciationRate" placeholder="例如: 3" required>
             </div>
+
             <div class="input-group">
                 <label for="interestRate">利息 (%):</label>
-                <input type="number" id="interestRate" name="interestRate" value="4.25" step="0.01" required>
+                <input type="number" id="interestRate" placeholder="例如: 4.5" required>
             </div>
+
+            <div class="input-group">
+                <label for="additionalPaymentPercentage">愿意多还多少%:</label>
+                <input type="number" id="additionalPaymentPercentage" placeholder="例如: 10" required>
+            </div>
+
+            <div class="input-group">
+                <input type="hidden" id="retirementAmountNeeded" required>
+            </div>
+
             <div class="button-group">
-                <button type="button" onclick="calculateHouseInvestment()">计算</button>
+                <button id="calculateButton" style="display: none;" >计算</button>
+                <button id="progressButton">人生进度</button>
+                <button id="toggleHouseCalculatorButton">显示 房贷 计算器</button>
+                <button id="nextButton">下一个</button>
+            </div>
+        </div>
+    </form>
+
+        <div class="column frame">
+            <div class="progress-container">
+                <div id="progressInfo" class="progress-info" style="display: none;">
+                    <h2>退休进度概览</h2>
+                    <p>您的退休目标金额为 <span id="displayRetirementGoal" class="highlight"></span></p>
+                    <div class="financial-dashboard">
+                        <div class="kpi-list">
+                            <div class="kpi-item">
+                                <span id="epfAmountShort" class="kpi-value"></span>
+                                <span class="kpi-label">EPF 累积</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="realEstateAmount" class="kpi-value"></span>
+                                <span class="kpi-label">屋价 累积</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="displayRetirementGoal2" class="kpi-value"></span>
+                                <span class="kpi-label">退休目标</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="totalAmountShort" class="kpi-value"></span>
+                                <span class="kpi-label">总累积资产</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="shortfallShort" class="kpi-value"></span>
+                                <span class="kpi-label">距离目标差额</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="monthlyEstimateShort" class="kpi-value"></span>
+                                <span class="kpi-label">退休后每月估算</span>
+                            </div>
+        
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-segment epf" style="width: 0%;">EPF</div>
+                                    <div class="progress-segment real-estate" style="width: 0%;">房地产</div>
+                                    <div class="progress-segment remaining" style="width: 100%;">剩余</div>
+                                </div>
+                                <p>您已完成 <span id="completionPercentage">0</span>% 的退休储蓄目标</p>
+                                <p>请记住进步 1% ！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="investmentProgress" class="frame" style="display:none;">
-            <h2>投资概况</h2>
-            <div id="progressBar">
-                <div id="progressFill"></div>
-            </div>
-            <p id="finalDebt"></p>
-            <p id="netPassiveIncome"></p>
-        </div>
-
-        <div id="houseCalculator" style="display:none;">
+        <div id="houseCalculator" class="frame" style="display:none;">
+            <h2>房贷计算器</h2>
             <div class="table-container">
                 <table id="houseTable">
                     <thead>
@@ -57,17 +109,18 @@
                             <th>租金年收入</th>
                             <th>欠银行</th>
                             <th>利息</th>
+                            <th>月供</th>
                             <th>年尾欠款</th>
                             <th>净被动收入</th>
+                            <th>价值</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Rows will be added here dynamically -->
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
     </div>
+
     <script src="house.js"></script>
 </body>
 </html>
